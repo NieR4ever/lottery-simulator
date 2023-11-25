@@ -1,2 +1,0 @@
-package love.huhu.model
-
