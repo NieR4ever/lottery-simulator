@@ -1,4 +1,4 @@
-import love.huhu.love.huhu.model.*
+import love.huhu.love.huhu.lotterysimulator.model.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -14,7 +14,7 @@ class ModelTest {
     @Test
     fun `test create db`() {
         transaction {
-            SchemaUtils.create(BetInfos,AwardInfos,BetNumberInfos)
+            SchemaUtils.create(BetInfos, AwardInfos, BetNumberInfos)
             val bet = BetInfo.new {
                 qq = 123
                 text = "123"

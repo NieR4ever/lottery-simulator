@@ -1,6 +1,6 @@
-package love.huhu.love.huhu.model
+package love.huhu.love.huhu.lotterysimulator.model
 
-import love.huhu.love.huhu.model.BetInfo.Companion.referrersOn
+import love.huhu.love.huhu.lotterysimulator.model.BetInfo.Companion.referrersOn
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.LongEntity
@@ -36,7 +36,7 @@ class BetInfo(id: EntityID<Int>) : IntEntity(id) {
 }
 
 object BetNumberInfos : LongIdTable("bet_number_info") {
-    val betInfo = reference("bet_info",BetInfos)
+    val betInfo = reference("bet_info", BetInfos)
     val number = varchar("number",1000)
 }
 

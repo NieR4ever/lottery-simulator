@@ -1,4 +1,4 @@
-package love.huhu
+package love.huhu.love.huhu.lotterysimulator
 
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
