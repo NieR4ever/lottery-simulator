@@ -12,7 +12,7 @@ class ModelTest {
 
 
     @Test
-    fun `test ad`() {
+    fun `test create db`() {
         transaction {
             SchemaUtils.create(BetInfos,AwardInfos,BetNumberInfos)
             val bet = BetInfo.new {
