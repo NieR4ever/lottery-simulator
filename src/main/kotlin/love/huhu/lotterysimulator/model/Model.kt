@@ -18,7 +18,7 @@ object BetInfos : IntIdTable("bet_info") {
     val qq = long("qq")
     val group = long("group").nullable()
     val text = varchar("text",1000)
-    val lotteryType = varchar("lottery_type", 100)
+    val lotteryType = enumerationByName<LotteryType>("lottery_type", 100)
     val betType = varchar("bet_type", 100)
     val betTime = datetime("bet_time").defaultExpression(CurrentDateTime)
     val expired = enumerationByName<ExpiredStatus>("expired",100)

@@ -18,7 +18,7 @@ class ModelTest {
             val bet = BetInfo.new {
                 qq = 123
                 text = "123"
-                lotteryType = "123"
+                lotteryType = LotteryType.SHUANG_SE_QIU
                 betType = "123"
                 betTime = LocalDateTime.now()
                 expired = ExpiredStatus.CURRENT
