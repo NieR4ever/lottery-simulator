@@ -1,11 +1,11 @@
+package love.huhu.model
+
 import love.huhu.love.huhu.lotterysimulator.model.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
-import java.util.Date
 
 class ModelTest {
     val db : Database = Database.connect("jdbc:sqlite:data.db", "org.sqlite.JDBC")
@@ -21,6 +21,7 @@ class ModelTest {
                 lotteryType = "123"
                 betType = "123"
                 betTime = LocalDateTime.now()
+                expired = ExpiredStatus.CURRENT
             }
 
             val award = AwardInfo.new {
@@ -35,7 +36,7 @@ class ModelTest {
                 betInfo = bet
                 number = "123"
             }
-            println(AwardInfo[award.id].betInfo)
+            println(AwardInfo[award.id].betInfo.expired)
         }
     }
 }

@@ -21,7 +21,7 @@ object BetInfos : IntIdTable("bet_info") {
     val lotteryType = varchar("lottery_type", 100)
     val betType = varchar("bet_type", 100)
     val betTime = datetime("bet_time").defaultExpression(CurrentDateTime)
-    val expired = bool("expired").defaultExpression(Op.FALSE)
+    val expired = enumerationByName<ExpiredStatus>("expired",100)
 
 }
 class BetInfo(id: EntityID<Int>) : IntEntity(id) {
@@ -63,4 +63,7 @@ class AwardInfo(id: EntityID<Int>) :IntEntity(id) {
     var grade by AwardInfos.grade
     var amount by AwardInfos.amount
     var betInfo by BetInfo referencedOn AwardInfos.betInfo
+}
+enum class ExpiredStatus {
+    NEXT,CURRENT,EXPIRED
 }
