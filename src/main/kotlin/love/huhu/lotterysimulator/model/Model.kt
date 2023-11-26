@@ -67,3 +67,6 @@ class AwardInfo(id: EntityID<Int>) :IntEntity(id) {
 enum class ExpiredStatus {
     NEXT,CURRENT,EXPIRED
 }
+enum class LotteryType {
+    SHUANG_SE_QIU
+}
