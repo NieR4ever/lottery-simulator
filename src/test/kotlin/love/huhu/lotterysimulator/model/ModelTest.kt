@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 
 class ModelTest {
-    val db : Database = Database.connect("jdbc:sqlite:data.db", "org.sqlite.JDBC")
+    val db : Database = Database.connect("jdbc:sqlite:data.db?mode=memory&cache=shared", "org.sqlite.JDBC")
 
 
     @Test

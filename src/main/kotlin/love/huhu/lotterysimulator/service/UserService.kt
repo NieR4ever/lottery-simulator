@@ -1,5 +1,6 @@
 package love.huhu.lotterysimulator.service
 
+import love.huhu.lotterysimulator.model.Database
 import love.huhu.lotterysimulator.rule.ShuangSeQiu
 import love.huhu.love.huhu.lotterysimulator.model.*
 import org.jetbrains.exposed.sql.batchInsert
@@ -8,23 +9,27 @@ object UserService {
     fun bet(dto: BetDto) {
 
         val expiredStatus= checkExpiredTime(dto.lotteryType)
-        var numbers = parseBetNumber(BetNumberDto(dto.text, dto.lotteryType, dto.betType))
-        val bet = BetInfo.new {
-            qq = dto.qq
-            dto.group?.apply { group = this }
-            text = dto.text
-            lotteryType = dto.lotteryType
-            betType = dto.betType
-            expired = expiredStatus
-        }
-        val betNumberDatas = numbers.map {
-            BetNumberData(bet,it.joinToString(" "))
-        }
+        val parseBetInfo = parseBetInfo(BetNumberDto(dto.text, dto.lotteryType))
+        val type = parseBetInfo.getBetType()
+        var numbers = parseBetInfo.getAllBetNumber(type)
+        Database.query {
+            val bet = BetInfo.new {
+                qq = dto.qq
+                dto.group?.apply { group = this }
+                text = dto.text
+                lotteryType = dto.lotteryType
+                betType = type.name
+                expired = expiredStatus
+            }
+            val betNumberDatas = numbers.map {
+                BetNumberData(bet,it.joinToString(" "))
+            }
 
-        betNumberDatas.forEach {
-            BetNumberInfo.new {
-                betInfo = it.betInfo
-                number = it.numbers
+            betNumberDatas.forEach {
+                BetNumberInfo.new {
+                    betInfo = it.betInfo
+                    number = it.numbers
+                }
             }
         }
 
@@ -36,8 +41,10 @@ object UserService {
         }
     }
 
-    private fun parseBetNumber(betNumberDto: BetNumberDto) : List<List<String>>{
+    private fun parseBetInfo(betNumberDto: BetNumberDto) : ShuangSeQiu{
 
-        return listOf()
+        return when(betNumberDto.lotteryType) {
+            LotteryType.SHUANG_SE_QIU -> ShuangSeQiu.parse(betNumberDto.text)
+        }
     }
 }

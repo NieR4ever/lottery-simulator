@@ -1,6 +1,7 @@
 package love.huhu.lotterysimulator.rule
 
 import love.huhu.lotterysimulator.LotteryConfig
+import love.huhu.lotterysimulator.service.BetNumberDto
 import love.huhu.lotterysimulator.service.SpiderService
 import love.huhu.love.huhu.lotterysimulator.model.ExpiredStatus
 import org.openqa.selenium.By
@@ -22,6 +23,16 @@ class ShuangSeQiu(private var redBalls1: List<String>, private var redBalls2: Li
 
         val kjWeekday = listOf(0,2,4) //周二，四，日开奖
         val kjTime = 22//晚上十点开奖
+        const val ruleUrl = "https://www.zhcw.com/c/2019-08-15/557266.shtml"
+        val template = """
+            投注双色球
+            红球：【】
+            胆码红球；【】
+            篮球：【】
+            ps:使用空格分隔号码，例如【01 02】
+            pps:非胆拖投注无需填写胆码红球项
+            #双色球规则网址：$ruleUrl
+        """.trimIndent()
         @JvmStatic
         fun checkLockBetExpired() : ExpiredStatus {
             val current = LocalDateTime.now().hour
@@ -30,37 +41,51 @@ class ShuangSeQiu(private var redBalls1: List<String>, private var redBalls2: Li
             }
             return ExpiredStatus.CURRENT
         }
+        @JvmStatic
+        fun parse(text: String) : ShuangSeQiu{
+            val redBalls1 = match(text,"""红球：【(.+?)】""".toRegex())
+            val redBalls2= match(text,"""胆拖红球：【(.+?)】""".toRegex())
+            val blueBalls= match(text,"""蓝球：【(.+?)】""".toRegex())
+            return ShuangSeQiu(redBalls1, redBalls2, blueBalls)
+        }
+        private fun match(text: String,regex:Regex) : List<String> {
+    val matchResult = regex.find(text)
+
+    val list = matchResult?.groupValues?.get(1)?.split(" ")
+            return list ?: emptyList()
+        }
+
     }
-    fun getBetType(): TouZhuType {
+    fun getBetType(): BetType {
         if (redBalls1.size < 6 || blueBalls.isEmpty()) {
-            return TouZhuType.UNKNOWN
+            return BetType.UNKNOWN
         }
         if (redBalls1.size == 6 && blueBalls.size == 1) {
             //单式投注
-            return TouZhuType.SINGLE
+            return BetType.SINGLE
         }
         if (redBalls1.size > 6 && blueBalls.size == 1) {
             //复式红球
-            return TouZhuType.MULTIPLE_RED_BALL
+            return BetType.MULTIPLE_RED_BALL
         }
         if (redBalls1.size == 6 && blueBalls.size > 1) {
             //复式蓝球
-            return TouZhuType.MULTIPLE_BLUE_BALL
+            return BetType.MULTIPLE_BLUE_BALL
         }
 
         if (redBalls1.size > 6 && blueBalls.size > 1) {
             //全复式
-            return TouZhuType.COMBO_ALL
+            return BetType.COMBO_ALL
         }
         if (redBalls1.isEmpty() || redBalls1.size > 5 || redBalls1.size + redBalls2.size < 7 || blueBalls.isEmpty()) {
-            return TouZhuType.UNKNOWN
+            return BetType.UNKNOWN
         }
         return if (blueBalls.size == 1) {
             //单式胆拖
-            TouZhuType.SINGLE_COMBO
+            BetType.SINGLE_COMBO
         } else {
             //复式胆拖
-            TouZhuType.MULTIPLE_COMBO
+            BetType.MULTIPLE_COMBO
         }
     }
 
@@ -74,27 +99,27 @@ class ShuangSeQiu(private var redBalls1: List<String>, private var redBalls2: Li
 
     }
 
-    fun getAllBetNumber(type: TouZhuType): List<List<String>> {
+    fun getAllBetNumber(type: BetType): List<List<String>> {
         val arrayList = ArrayList<List<String>>()
         when (type) {
-            TouZhuType.SINGLE -> {
+            BetType.SINGLE -> {
                 arrayList.add(redBalls1 + blueBalls)
             }
 
-            TouZhuType.MULTIPLE_RED_BALL -> {
+            BetType.MULTIPLE_RED_BALL -> {
                 redBalls1.forEach() { item ->
                     val list = redBalls1.filter { it != item }
                     arrayList.add(list + blueBalls)
                 }
             }
 
-            TouZhuType.MULTIPLE_BLUE_BALL -> {
+            BetType.MULTIPLE_BLUE_BALL -> {
                 blueBalls.forEach() {
                     arrayList.add(redBalls1 + it)
                 }
             }
 
-            TouZhuType.COMBO_ALL ->
+            BetType.COMBO_ALL ->
                 redBalls1.forEach() { item ->
                     val list = redBalls1.filter { it != item }
                     blueBalls.forEach() {
@@ -102,7 +127,7 @@ class ShuangSeQiu(private var redBalls1: List<String>, private var redBalls2: Li
                     }
                 }
 
-            TouZhuType.SINGLE_COMBO -> {
+            BetType.SINGLE_COMBO -> {
                 val danTuoSize = 6 - redBalls1.size
                 val lists = combinations(redBalls2, danTuoSize)
                 lists.forEach() {
@@ -110,7 +135,7 @@ class ShuangSeQiu(private var redBalls1: List<String>, private var redBalls2: Li
                 }
             }
 
-            TouZhuType.MULTIPLE_COMBO -> {
+            BetType.MULTIPLE_COMBO -> {
                 val danTuoSize = 6 - redBalls1.size
                 val lists = combinations(redBalls2, danTuoSize)
                 lists.forEach() { list ->
@@ -121,7 +146,7 @@ class ShuangSeQiu(private var redBalls1: List<String>, private var redBalls2: Li
 
             }
 
-            TouZhuType.UNKNOWN -> {}
+            BetType.UNKNOWN -> {}
         }
         return arrayList
     }
@@ -196,7 +221,7 @@ fun <T> combinations(list: List<T>, n: Int): List<List<T>> {
     return result
 }
 
-enum class TouZhuType {
+enum class BetType {
     SINGLE, MULTIPLE_RED_BALL, MULTIPLE_BLUE_BALL, COMBO_ALL, UNKNOWN, SINGLE_COMBO, MULTIPLE_COMBO
 }
 

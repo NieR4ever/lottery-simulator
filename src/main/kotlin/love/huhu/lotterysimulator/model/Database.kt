@@ -6,12 +6,15 @@ import love.huhu.love.huhu.lotterysimulator.model.AwardInfos
 import love.huhu.love.huhu.lotterysimulator.model.BetInfos
 import love.huhu.love.huhu.lotterysimulator.model.BetNumberInfos
 import net.mamoe.mirai.utils.error
+import net.mamoe.mirai.utils.info
 import net.mamoe.mirai.utils.verbose
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.statements.StatementContext
 import org.jetbrains.exposed.sql.statements.expandArgs
+import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.sql.Connection
 
 object Database {
 
@@ -23,6 +26,19 @@ object Database {
             "jdbc:sqlite:${LotterySimulator.dataFolder}/${LotteryConfig.databaseName}",
             "org.sqlite.JDBC"
         )
+        connectionStatus = ConnectionStatus.CONNECTED
+        LotterySimulator.logger.info { "Database is connected." }
+        initDatabase()
+    }
+    fun connectDebug() {
+        db = Database.connect(
+            "jdbc:sqlite::memory:",
+            "org.sqlite.JDBC"
+        )
+        TransactionManager.manager.defaultIsolationLevel = Connection.TRANSACTION_SERIALIZABLE
+        connectionStatus = ConnectionStatus.CONNECTED
+//        LotterySimulator.logger.info { "Database is connected." }
+        initDatabase()
     }
 
     sealed class ConnectionStatus {
@@ -37,7 +53,7 @@ object Database {
         query {
             it.addLogger(object : SqlLogger {
                 override fun log(context: StatementContext, transaction: Transaction) {
-                    LotterySimulator.logger.verbose { "sql: ${context.expandArgs(transaction)}" }
+//                    LotterySimulator.logger.verbose { "sql: ${context.expandArgs(transaction)}" }
                 }
 
             })
