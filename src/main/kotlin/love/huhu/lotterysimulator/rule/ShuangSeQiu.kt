@@ -1,12 +1,14 @@
 package love.huhu.lotterysimulator.rule
 
+import love.huhu.lotterysimulator.LotteryConfig
 import love.huhu.lotterysimulator.service.SpiderService
+import love.huhu.love.huhu.lotterysimulator.model.ExpiredStatus
 import org.openqa.selenium.By
+import java.time.LocalDateTime
 
 class ShuangSeQiu(private var redBalls1: List<String>, private var redBalls2: List<String>, private var blueBalls: List<String>) {
     private val redBallNumbers = (1..33).map { String.format("%02d",it) }
     private val blueBallNumbers = (1..16).map { String.format("%02d",it) }
-    private val kjTime = listOf(0,2,4) //周二，四，日开奖
     init {
         blueBalls = blueBalls.distinct()
         if (redBalls1.any { redBalls2.contains(it) }) {
@@ -15,6 +17,19 @@ class ShuangSeQiu(private var redBalls1: List<String>, private var redBalls2: Li
         redBalls1 = redBalls1.distinct()
         redBalls2 = redBalls2.distinct()
         checkNumberRange();
+    }
+    companion object {
+
+        val kjWeekday = listOf(0,2,4) //周二，四，日开奖
+        val kjTime = 22//晚上十点开奖
+        @JvmStatic
+        fun checkLockBetExpired() : ExpiredStatus {
+            val current = LocalDateTime.now().hour
+            if (kjTime - current <= LotteryConfig.lockBetTime) {
+                return ExpiredStatus.NEXT
+            }
+            return ExpiredStatus.CURRENT
+        }
     }
     fun getBetType(): TouZhuType {
         if (redBalls1.size < 6 || blueBalls.isEmpty()) {

@@ -1,5 +1,6 @@
 package love.huhu.lotterysimulator.service
 
+import love.huhu.lotterysimulator.rule.ShuangSeQiu
 import love.huhu.love.huhu.lotterysimulator.model.*
 import org.jetbrains.exposed.sql.batchInsert
 
@@ -30,7 +31,9 @@ object UserService {
     }
 
     private fun checkExpiredTime(lotteryType: LotteryType) : ExpiredStatus{
-        return ExpiredStatus.EXPIRED
+        return when(lotteryType) {
+            LotteryType.SHUANG_SE_QIU -> ShuangSeQiu.checkLockBetExpired()
+        }
     }
 
     private fun parseBetNumber(betNumberDto: BetNumberDto) : List<List<String>>{
