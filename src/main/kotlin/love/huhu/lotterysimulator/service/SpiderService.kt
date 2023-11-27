@@ -5,14 +5,10 @@ import love.huhu.lotterysimulator.LotteryConfig
 import org.openqa.selenium.WebDriver
 
 object SpiderService {
-    val driver : WebDriver
-    init {
-        driver = when(LotteryConfig.browser) {
-            BrowserType.CHROME -> WebDriverManager.chromedriver().create()
-            BrowserType.FIREFOX -> WebDriverManager.firefoxdriver().create()
-            BrowserType.EDGE -> WebDriverManager.edgedriver().create()
-        }
-
+    val driver : WebDriver = when(LotteryConfig.browser) {
+        BrowserType.CHROME -> WebDriverManager.chromedriver().create()
+        BrowserType.FIREFOX -> WebDriverManager.firefoxdriver().create()
+        BrowserType.EDGE -> WebDriverManager.edgedriver().create()
     }
 
 
