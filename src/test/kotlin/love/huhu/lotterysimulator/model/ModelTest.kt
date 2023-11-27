@@ -1,4 +1,4 @@
-package love.huhu.model
+package love.huhu.lotterysimulator.model
 
 import love.huhu.love.huhu.lotterysimulator.model.*
 import org.jetbrains.exposed.sql.Database
