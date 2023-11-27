@@ -1,8 +1,12 @@
 package love.huhu.lotterysimulator.rule
 
+import love.huhu.lotterysimulator.service.SpiderService
+import org.openqa.selenium.By
+
 class ShuangSeQiu(private var redBalls1: List<String>, private var redBalls2: List<String>, private var blueBalls: List<String>) {
     private val redBallNumbers = (1..33).map { String.format("%02d",it) }
     private val blueBallNumbers = (1..16).map { String.format("%02d",it) }
+    private val kjTime = listOf(0,2,4) //周二，四，日开奖
     init {
         blueBalls = blueBalls.distinct()
         if (redBalls1.any { redBalls2.contains(it) }) {
@@ -143,6 +147,16 @@ class ShuangSeQiu(private var redBalls1: List<String>, private var redBalls2: Li
         }
 
         return AwardLevel.NONE // 没有中奖
+    }
+    data class Drawn(val redBalls: List<String>, val blueBalls: List<String>, val kjTime: String)
+    val url = "https://www.zhcw.com/kjxx/ssq/kjxq"
+    fun fetch() :Drawn{
+        val driver = SpiderService.driver
+        driver.get(url)
+        val kjTime = driver.findElement(By.cssSelector(".sj span")).text
+        val kjqHs = driver.findElements(By.cssSelector(".kjqH")).map { it.text }
+        val kjqLs = driver.findElements(By.cssSelector(".kjqL")).map { it.text }
+        return Drawn(kjqHs,kjqLs,kjTime)
     }
 }
 
