@@ -6,7 +6,7 @@ import love.huhu.love.huhu.lotterysimulator.model.*
 import org.jetbrains.exposed.sql.batchInsert
 
 object UserService {
-    fun bet(dto: BetDto) {
+    fun bet(dto: BetDto): ExpiredStatus {
 
         val expiredStatus= checkExpiredTime(dto.lotteryType)
         val parseBetInfo = parseBetInfo(BetNumberDto(dto.text, dto.lotteryType))
@@ -32,7 +32,7 @@ object UserService {
                 }
             }
         }
-
+        return expiredStatus;
     }
 
     private fun checkExpiredTime(lotteryType: LotteryType) : ExpiredStatus{

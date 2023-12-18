@@ -6,15 +6,21 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
+import kotlin.test.BeforeTest
 
 class ModelTest {
-    val db : Database = Database.connect("jdbc:sqlite::memory:", "org.sqlite.JDBC")
 
-
+    @BeforeTest
+    fun before() {
+        val db : Database = Database.connect("jdbc:sqlite:file::memory:?cache=shared", "org.sqlite.JDBC")
+    }
     @Test
     fun `test create db`() {
         transaction {
+
             SchemaUtils.create(BetInfos, AwardInfos, BetNumberInfos)
+        }
+        transaction {
             val bet = BetInfo.new {
                 qq = 123
                 text = "123"

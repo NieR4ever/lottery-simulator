@@ -50,14 +50,17 @@ object Database {
         null
     } else transaction(db) { block(this) }
     private fun initDatabase() {
-        query {
-            it.addLogger(object : SqlLogger {
-                override fun log(context: StatementContext, transaction: Transaction) {
-//                    LotterySimulator.logger.verbose { "sql: ${context.expandArgs(transaction)}" }
-                }
-
-            })
-            //初始化两张表
+//        query {
+//            it.addLogger(object : SqlLogger {
+//                override fun log(context: StatementContext, transaction: Transaction) {
+////                    LotterySimulator.logger.verbose { "sql: ${context.expandArgs(transaction)}" }
+//                }
+//
+//            })
+//            //初始化两张表
+//            SchemaUtils.create(BetInfos,AwardInfos,BetNumberInfos)
+//        }
+        transaction {
             SchemaUtils.create(BetInfos,AwardInfos,BetNumberInfos)
         }
     }

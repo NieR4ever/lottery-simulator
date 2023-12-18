@@ -16,6 +16,7 @@ import java.sql.Connection
 
 class UserServiceTest {
 
+    val db = Database.connectDebug()
     @Test
     fun bet() {
 
@@ -28,7 +29,7 @@ class UserServiceTest {
             pps:非胆拖投注无需填写胆码红球项
         """.trimIndent()
         val betDto = BetDto(template, 123, 123, LotteryType.SHUANG_SE_QIU)
-        UserService.bet(betDto)
+        val expiredStatus = UserService.bet(betDto)
         Database.query {
             val betInfo = BetInfo[1]
             assertEquals(123,betInfo.qq)
@@ -42,7 +43,6 @@ class UserServiceTest {
         @BeforeAll
         @JvmStatic
         fun setupAll(): Unit {
-            Database.connectDebug()
         }
         @AfterAll
         @JvmStatic
